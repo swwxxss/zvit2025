@@ -3,9 +3,25 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
 import { insertTattooSchema } from "@shared/schema";
+import { generateTattooImage } from "./ai";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   setupAuth(app);
+
+  // Generate tattoo image
+  app.post("/api/generate-tattoo", async (req, res) => {
+    try {
+      const { prompt } = req.body;
+      if (!prompt) {
+        return res.status(400).json({ error: "Prompt is required" });
+      }
+
+      const imageUrl = await generateTattooImage(prompt);
+      res.json({ imageUrl });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
 
   // Get all tattoos
   app.get("/api/tattoos", async (_req, res) => {

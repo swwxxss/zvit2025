@@ -3,6 +3,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 const SHOWCASE_EXAMPLES = [
   {
@@ -23,6 +25,7 @@ const SHOWCASE_EXAMPLES = [
 ];
 
 export default function AIShowcase() {
+  const { toast } = useToast();
   const [prompt, setPrompt] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedImage, setGeneratedImage] = useState<string | null>(null);
@@ -31,12 +34,23 @@ export default function AIShowcase() {
     if (!prompt) return;
 
     setIsGenerating(true);
-    // TODO: Implement actual AI generation here
-    // For now, we'll just simulate a delay
-    setTimeout(() => {
-      setGeneratedImage("https://placehold.co/400x400/2a2a2a/888888?text=Generated+Tattoo");
+    try {
+      const res = await apiRequest("POST", "/api/generate-tattoo", { prompt });
+      const data = await res.json();
+      setGeneratedImage(data.imageUrl);
+      toast({
+        title: "Success",
+        description: "Your tattoo design has been generated!",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
       setIsGenerating(false);
-    }, 2000);
+    }
   };
 
   return (
@@ -45,7 +59,7 @@ export default function AIShowcase() {
         <h3 className="text-lg font-medium mb-4">Generate Your Own Design</h3>
         <div className="flex gap-4">
           <Input
-            placeholder="Describe your dream tattoo..."
+            placeholder="Опишіть ваше тату (наприклад: вовк, дракон, квітка)..."
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             className="flex-1"
@@ -57,10 +71,10 @@ export default function AIShowcase() {
             {isGenerating ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Generating...
+                Генерація...
               </>
             ) : (
-              'Generate'
+              'Згенерувати'
             )}
           </Button>
         </div>

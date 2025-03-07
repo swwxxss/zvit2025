@@ -2,10 +2,11 @@ import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Loader2 } from "lucide-react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 
 export default function NavigationBar() {
   const { user, logoutMutation } = useAuth();
+  const [location] = useLocation();
 
   return (
     <nav className="bg-card border-b border-border">
@@ -15,19 +16,14 @@ export default function NavigationBar() {
             <h1 className="text-2xl font-bold text-primary cursor-pointer">TattooVerse</h1>
           </Link>
           <div className="hidden md:flex space-x-6">
-            <Link href="#gallery">
-              <span className="text-foreground hover:text-primary transition-colors cursor-pointer">
+            <Link href="/">
+              <span className={`transition-colors cursor-pointer ${location === '/' ? 'text-primary' : 'text-foreground hover:text-primary'}`}>
                 Gallery
               </span>
             </Link>
-            <Link href="#ai">
-              <span className="text-foreground hover:text-primary transition-colors cursor-pointer">
+            <Link href="/ai">
+              <span className={`transition-colors cursor-pointer ${location === '/ai' ? 'text-primary' : 'text-foreground hover:text-primary'}`}>
                 AI Generator
-              </span>
-            </Link>
-            <Link href="#shops">
-              <span className="text-foreground hover:text-primary transition-colors cursor-pointer">
-                Find Shops
               </span>
             </Link>
           </div>

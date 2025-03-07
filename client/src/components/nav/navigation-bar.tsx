@@ -26,6 +26,11 @@ export default function NavigationBar() {
                 AI Generator
               </span>
             </Link>
+            <Link href="/shops">
+              <span className={`transition-colors cursor-pointer ${location === '/shops' ? 'text-primary' : 'text-foreground hover:text-primary'}`}>
+                Тату салони
+              </span>
+            </Link>
           </div>
         </div>
 

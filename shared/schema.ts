@@ -19,14 +19,23 @@ export const tattoos = pgTable("tattoos", {
   style: text("style").notNull(),
   tags: text("tags").array(),
   likes: integer("likes").default(0),
+  createdAt: text("created_at").notNull(),
+});
+
+export const comments = pgTable("comments", {
+  id: serial("id").primaryKey(),
+  tattooId: integer("tattoo_id").references(() => tattoos.id),
+  userId: integer("user_id").references(() => users.id),
+  content: text("content").notNull(),
+  createdAt: text("created_at").notNull(),
 });
 
 export const shops = pgTable("shops", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   address: text("address").notNull(),
-  lat: numeric("lat", { precision: 10, scale: 6 }).notNull(),
-  lng: numeric("lng", { precision: 10, scale: 6 }).notNull(),
+  lat: text("lat").notNull(),
+  lng: text("lng").notNull(),
   rating: integer("rating"),
   description: text("description"),
   contactInfo: json("contact_info"),
@@ -35,6 +44,7 @@ export const shops = pgTable("shops", {
 // Create base schemas first
 const baseUserSchema = createInsertSchema(users);
 const baseTattooSchema = createInsertSchema(tattoos);
+const baseCommentSchema = createInsertSchema(comments);
 
 // Then create the insert schemas by picking fields
 export const insertUserSchema = baseUserSchema.pick({
@@ -50,7 +60,12 @@ export const insertTattooSchema = baseTattooSchema.pick({
   tags: true,
 });
 
+export const insertCommentSchema = baseCommentSchema.pick({
+  content: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 export type Tattoo = typeof tattoos.$inferSelect;
+export type Comment = typeof comments.$inferSelect;
 export type Shop = typeof shops.$inferSelect;

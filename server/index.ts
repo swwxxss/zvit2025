@@ -1,10 +1,18 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import session from 'express-session';
 
 const app = express();
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: false, limit: '50mb' }));
+
+app.use(session({
+  secret: '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',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false }
+}));
 
 app.use((req, res, next) => {
   const start = Date.now();
